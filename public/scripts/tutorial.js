@@ -3,19 +3,27 @@ var CommentBox = React.createClass({
     return(
       <div className='commentBox'>
         <h1>Comments</h1>
-        <CommentList />
+        <CommentList data={ this.props.data } />
         <CommentForm />
       </div>
     );
   }
 });
 
+//コメントを取得したデータから表示させるように変更
 var CommentList = React.createClass({
   render: function(){
+    var commentNode = this.props.data.map(function(comment){
+      return(
+        <Comment author={ comment.author } key={ comment.id }>
+          { comment.text }
+        </Comment>
+      );
+    });
+
     return(
       <div className='commentList'>
-        <Comment author='Pate Hunt'>This is one Commnet</Comment>
-        <Comment author='Jordan Walke'>This is *another* comment</Comment>
+        { commentNode }
       </div>
     );
   }
@@ -32,7 +40,6 @@ var CommentForm = React.createClass({
 });
 
 var Comment = React.createClass({
-  //remarkableの機能を用いてHTML文から危険なリンクを取り除いてくれている
   rawMarkup: function(){
     var md = new Remarkable();
     var rawMarkup = md.render(this.props.children.toString(), { sanitize: true });
@@ -50,8 +57,15 @@ var Comment = React.createClass({
   }
 });
 
+// 一番親から渡すdata propsを定義(本当はAPI経由で持ってくるやつ)
+var data = [
+  {id: 1, author: "田中太郎", text: "This is one comment"},
+  {id: 2, author: "山田次郎", text: "This is *another* comment"}
+];
+
+// dataをpropsとして渡す
 ReactDOM.render(
-  <CommentBox />,
+  <CommentBox data={ data } />,
   document.getElementById('content')
 );
 
