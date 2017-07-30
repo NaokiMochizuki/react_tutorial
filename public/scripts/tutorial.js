@@ -15,20 +15,12 @@ var CommentBox = React.createClass({
   getInitialState: function(){
     return { data: [] };
   },
-  //{author: hoge, text: piyo}をajaxで投げて、最新のCommentList(=data、返り値)からsetStateで再描画
+  //受け取ったデータにidを追加した上で、concatで既存データに追加、それをsetStateしてview再描画
   handleCommentSubmit: function(comment){
-    $.ajax({
-      url: this.props.url,
-      dataType: 'json',
-      type: 'POST',
-      data: comment,
-      success: function(data){
-        this.setState({ data: data });
-      }.bind(this),
-      error: function(xhr, status, err){
-        console.error(this.props.url, status, err.toString());
-      }.bind(this)
-    });
+    var comments = this.state.data;
+    comment.id = Date.now();
+    var newComment = comments.concat([comment]);
+    this.setState({ data: newComments });
   },
   componentDidMount: function(){
     this.loadCommentsFromServer();
