@@ -1,16 +1,33 @@
 var CommentBox = React.createClass({
+  //getInitialStateで、コンポーネントのstate初期値をセットアップ
+  getInitialState: function(){
+    return { data: [] };
+  },
+  //componentDidMount: コンポーネントが最初にレンダリングされた後に自動で呼ばれるメソッド
+  componentDidMount: function(){
+    $.ajax({
+      url: this.props.url,
+      dataType: 'json',
+      cache: false,
+      success: function(data){
+        this.setState({ data: data });
+      }.bind(this),
+      error: function(xhr, status, err){
+        console.error(this.props.url, status, err,toString());
+      }.bind(this)
+    });
+  },
   render: function(){
     return(
       <div className='commentBox'>
         <h1>Comments</h1>
-        <CommentList data={ this.props.data } />
+        <CommentList data={ this.state.data } />
         <CommentForm />
       </div>
     );
   }
 });
 
-//コメントを取得したデータから表示させるように変更
 var CommentList = React.createClass({
   render: function(){
     var commentNode = this.props.data.map(function(comment){
@@ -57,15 +74,8 @@ var Comment = React.createClass({
   }
 });
 
-// 一番親から渡すdata propsを定義(本当はAPI経由で持ってくるやつ)
-var data = [
-  {id: 1, author: "田中太郎", text: "This is one comment"},
-  {id: 2, author: "山田次郎", text: "This is *another* comment"}
-];
-
-// dataをpropsとして渡す
 ReactDOM.render(
-  <CommentBox data={ data } />,
+  <CommentBox url='/api/comments' />,
   document.getElementById('content')
 );
 
