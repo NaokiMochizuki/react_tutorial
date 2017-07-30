@@ -32,17 +32,19 @@ var CommentForm = React.createClass({
 });
 
 var Comment = React.createClass({
-  render: function(){
-    //markdownからHTMLにコンバートするライブラリ、remarkable.jsの使用
+  //remarkableの機能を用いてHTML文から危険なリンクを取り除いてくれている
+  rawMarkup: function(){
     var md = new Remarkable();
-    //propsでは属性として渡された値を取得
-    //props.childrenでは、間に挟まれたノード(この場合はThis is ~~~っていう文字)を渡してるっぽい
+    var rawMarkup = md.render(this.props.children.toString(), { sanitize: true });
+    return { __html: rawMarkup };
+  },
+  render: function(){
     return(
       <div className='comment'>
         <h2 className='commentAuthor'>
           { this.props.author }
         </h2>
-        { md.render(this.props.children.toString()) }
+        <span dangerouslySetInnerHTML={ this.rawMarkup()} />
       </div>
     );
   }
